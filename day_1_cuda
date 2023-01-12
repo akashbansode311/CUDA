@@ -1,0 +1,44 @@
+#include<stdio.h>
+#include<stdlib.h>
+__global__ void add(int* ad,int* bd,int* cd)
+{
+
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    cd[i] = ad[i] + bd[i];
+
+}
+int main()
+{
+    int size = 200*sizeof(int);
+    int a[200],b[200],c[200],*ad,*bd,*cd;
+    int i;
+    for(i=0;i<200;i++)
+    {
+        a[i]=i;
+        b[i]=i;
+        c[i]=0;
+    }
+    cudaMalloc(&ad,size);
+    cudaMemcpy(ad,a,size,cudaMemcpyHostToDevice); 
+
+    cudaMalloc(&bd,size);
+    cudaMemcpy(bd,b,size,cudaMemcpyHostToDevice);
+
+    cudaMalloc(&cd,size);
+
+    dim3  DimGrid(1,1);
+    dim3  DimBlock(200,1);
+
+    add<<< DimGrid,DimBlock >>>(ad,bd,cd);
+
+    cudaMemcpy(c,cd,size,cudaMemcpyDeviceToHost);
+
+    for(i=0;i<200;i++)
+    {
+       // c[i]=a[i]+b[i];
+        printf("%d\n",c[i]);
+    }
+    cudaFree(ad);
+    cudaFree(bd);
+    cudaFree(cd);
+}
