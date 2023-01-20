@@ -3,7 +3,7 @@
 
 __global__ void arradd(int* md,int* nd,int* pd)
 {
-    int id = threadIdx.x;
+    int id = blockIdx.x*blockDim.x + threadIdx.x;
     pd[id] = md[id] + nd[id];
 } 
 
